@@ -5,23 +5,24 @@
 // with TcpPolyfill. When used with the rethinkdb driver, TCP connections to
 // a rethinkdb database will be proxied through a WebSocket.
 
-function TcpPolyfillPlugin(contextPattern) {
-  this.contextPattern = contextPattern;
-}
+class TcpPolyfillPlugin {
+  constructor(contextPattern) {
+    this.contextPattern = contextPattern;
+  }
 
-TcpPolyfillPlugin.prototype.apply = function(compiler) {
-  var contextPattern = this.contextPattern;
-  compiler.plugin('normal-module-factory', function(nmf) {
-    nmf.plugin('before-resolve', function(result, callback) {
-      if (!result) return callback();
-      if (/^net$/.test(result.request)) {
-        if (contextPattern.test(result.context)) {
-          result.request = __dirname + '/../src/TcpPolyfill.js';
+  apply(compiler) {
+    const contextPattern = this.contextPattern;
+
+    compiler.hooks.normalModuleFactory.tap("TcpPolyfill", function(nmf) {
+      nmf.hooks.beforeResolve.tap("TcpPolyfill", function(result) {
+        if (/^net$/.test(result.request)) {
+          if (contextPattern.test(result.context)) {
+            result.request = __dirname + "/../src/TcpPolyfill.js";
+          }
         }
-      }
-      return callback(null, result);
+      });
     });
-  });
-};
+  }
+}
 
 module.exports = TcpPolyfillPlugin;
