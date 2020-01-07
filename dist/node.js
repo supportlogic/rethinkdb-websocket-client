@@ -7,7 +7,7 @@
 		exports["RethinkdbWebsocketClient"] = factory(require("url"), require("util"), require("http"), require("https"), require("crypto"), require("stream"), require("fs"), require("events"), require("path"), require("zlib"), require("tls"));
 	else
 		root["RethinkdbWebsocketClient"] = factory(root["url"], root["util"], root["http"], root["https"], root["crypto"], root["stream"], root["fs"], root["events"], root["path"], root["zlib"], root["tls"]);
-})(this, function(__WEBPACK_EXTERNAL_MODULE_45__, __WEBPACK_EXTERNAL_MODULE_46__, __WEBPACK_EXTERNAL_MODULE_47__, __WEBPACK_EXTERNAL_MODULE_48__, __WEBPACK_EXTERNAL_MODULE_49__, __WEBPACK_EXTERNAL_MODULE_50__, __WEBPACK_EXTERNAL_MODULE_53__, __WEBPACK_EXTERNAL_MODULE_55__, __WEBPACK_EXTERNAL_MODULE_60__, __WEBPACK_EXTERNAL_MODULE_67__, __WEBPACK_EXTERNAL_MODULE_78__) {
+})(this, function(__WEBPACK_EXTERNAL_MODULE_45__, __WEBPACK_EXTERNAL_MODULE_46__, __WEBPACK_EXTERNAL_MODULE_47__, __WEBPACK_EXTERNAL_MODULE_48__, __WEBPACK_EXTERNAL_MODULE_49__, __WEBPACK_EXTERNAL_MODULE_50__, __WEBPACK_EXTERNAL_MODULE_53__, __WEBPACK_EXTERNAL_MODULE_55__, __WEBPACK_EXTERNAL_MODULE_60__, __WEBPACK_EXTERNAL_MODULE_67__, __WEBPACK_EXTERNAL_MODULE_76__) {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -77,7 +77,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rethinkdb2 = _interopRequireDefault(_rethinkdb);
 
-	var _rethinkdbProtoDef = __webpack_require__(84);
+	var _rethinkdbProtoDef = __webpack_require__(82);
 
 	var _rethinkdbProtoDef2 = _interopRequireDefault(_rethinkdbProtoDef);
 
@@ -5153,9 +5153,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	net = __webpack_require__(41);
 
-	rethinkdb = __webpack_require__(86);
+	rethinkdb = __webpack_require__(84);
 
-	error = __webpack_require__(83);
+	error = __webpack_require__(81);
 
 	rethinkdb.connect = net.connect;
 
@@ -5179,17 +5179,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	net = __webpack_require__(42);
 
-	tls = __webpack_require__(78);
+	tls = __webpack_require__(76);
 
 	events = __webpack_require__(55);
 
-	util = __webpack_require__(82);
+	util = __webpack_require__(80);
 
-	err = __webpack_require__(83);
+	err = __webpack_require__(81);
 
-	cursors = __webpack_require__(85);
+	cursors = __webpack_require__(83);
 
-	protodef = __webpack_require__(84);
+	protodef = __webpack_require__(82);
 
 	crypto = __webpack_require__(49);
 
@@ -5203,7 +5203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	protoResponseType = protodef.Response.ResponseType;
 
-	r = __webpack_require__(86);
+	r = __webpack_require__(84);
 
 	Promise = __webpack_require__(2);
 
@@ -6176,15 +6176,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _blobToBuffer = __webpack_require__(79);
+	var _blobToBuffer = __webpack_require__(77);
 
 	var _blobToBuffer2 = _interopRequireDefault(_blobToBuffer);
 
-	var _eventemitter2 = __webpack_require__(80);
+	var _eventemitter2 = __webpack_require__(78);
 
 	var _eventemitter22 = _interopRequireDefault(_eventemitter2);
 
-	var _PacketReader = __webpack_require__(81);
+	var _PacketReader = __webpack_require__(79);
 
 	var _PacketReader2 = _interopRequireDefault(_PacketReader);
 
@@ -6217,6 +6217,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function setIsConnected() {
 	  tcpPolyfillOptions.isConnected = true;
 	}
+
+	var knownEvents = {
+	  logout: 'logout',
+	  activityUpdate: 'activityUpdate'
+	};
 
 	function Socket(options) {
 	  var _this = this;
@@ -6295,10 +6300,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          emitter.emit('data', buffer);
 	        });
 	      } else if (typeof ArrayBuffer !== 'undefined' && data instanceof ArrayBuffer) {
-	        // Support force logout
-	        // In order to not cause weird errors in RDB driver emit it as another topic 'logout'
-	        if (data.byteLength === 6 && Buffer.from(data).toString() === 'logout') {
-	          return emitter.emit('logout');
+	        // Support known events as force logout
+	        // In order to not cause weird errors in RDB driver emit it as it's own topic
+	        if (Object.keys(knownEvents).some(function (event) {
+	          return data.byteLength === event.length;
+	        })) {
+	          var dataString = Buffer.from(data).toString();
+	          if (knownEvents[dataString]) {
+	            return emitter.emit(knownEvents[dataString]);
+	          }
 	        }
 
 	        if (shouldWaitForPacketComplete) {
@@ -6417,7 +6427,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var WS = module.exports = __webpack_require__(44);
 
-	WS.Server = __webpack_require__(77);
+	WS.Server = __webpack_require__(75);
 	WS.Sender = __webpack_require__(54);
 	WS.Receiver = __webpack_require__(68);
 
@@ -6480,9 +6490,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  , Options = __webpack_require__(52)
 	  , Sender = __webpack_require__(54)
 	  , Receiver = __webpack_require__(68)
-	  , SenderHixie = __webpack_require__(74)
-	  , ReceiverHixie = __webpack_require__(75)
-	  , Extensions = __webpack_require__(76)
+	  , SenderHixie = __webpack_require__(72)
+	  , ReceiverHixie = __webpack_require__(73)
+	  , Extensions = __webpack_require__(74)
 	  , PerMessageDeflate = __webpack_require__(66)
 	  , EventEmitter = __webpack_require__(55).EventEmitter;
 
@@ -8743,7 +8753,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var util = __webpack_require__(46)
 	  , Validation = __webpack_require__(69).Validation
 	  , ErrorCodes = __webpack_require__(56)
-	  , BufferPool = __webpack_require__(73)
+	  , BufferPool = __webpack_require__(71)
 	  , bufferUtil = __webpack_require__(57).BufferUtil
 	  , PerMessageDeflate = __webpack_require__(66);
 
@@ -9451,46 +9461,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 
 	try {
-	  module.exports = __webpack_require__(70);
+	  module.exports = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"utf-8-validate\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	} catch (e) {
-	  module.exports = __webpack_require__(72);
+	  module.exports = __webpack_require__(70);
 	}
 
 
 /***/ }),
 /* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	try {
-	  module.exports = __webpack_require__(59)('validation');
-	} catch (e) {
-	  module.exports = __webpack_require__(71);
-	}
-
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports) {
-
-	'use strict';
-
-	/*!
-	 * UTF-8 validate: UTF-8 validation for WebSockets.
-	 * Copyright(c) 2015 Einar Otto Stangvik <einaros@gmail.com>
-	 * MIT Licensed
-	 */
-
-	exports.Validation = {
-	  isValidUTF8: function(buffer) {
-	    return true;
-	  }
-	};
-
-
-/***/ }),
-/* 72 */
 /***/ (function(module, exports) {
 
 	/*!
@@ -9508,7 +9486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 73 */
+/* 71 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*!
@@ -9577,7 +9555,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 74 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*!
@@ -9707,7 +9685,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 75 */
+/* 73 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*!
@@ -9897,7 +9875,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 76 */
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	
@@ -9973,7 +9951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 77 */
+/* 75 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	/*!
@@ -9988,9 +9966,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  , crypto = __webpack_require__(49)
 	  , Options = __webpack_require__(52)
 	  , WebSocket = __webpack_require__(44)
-	  , Extensions = __webpack_require__(76)
+	  , Extensions = __webpack_require__(74)
 	  , PerMessageDeflate = __webpack_require__(66)
-	  , tls = __webpack_require__(78)
+	  , tls = __webpack_require__(76)
 	  , url = __webpack_require__(45);
 
 	/**
@@ -10492,13 +10470,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 78 */
+/* 76 */
 /***/ (function(module, exports) {
 
 	module.exports = require("tls");
 
 /***/ }),
-/* 79 */
+/* 77 */
 /***/ (function(module, exports) {
 
 	/* global Blob, FileReader */
@@ -10525,7 +10503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 80 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -11104,7 +11082,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 81 */
+/* 79 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -11173,16 +11151,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports["default"];
 
 /***/ }),
-/* 82 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
 	var convertPseudotype, err, errorClass, mkAtom, mkErr, mkSeq, plural, protoErrorType, protodef, recursivelyConvertPseudotype,
 	  slice = [].slice;
 
-	err = __webpack_require__(83);
+	err = __webpack_require__(81);
 
-	protodef = __webpack_require__(84);
+	protodef = __webpack_require__(82);
 
 	protoErrorType = protodef.Response.ErrorType;
 
@@ -11392,7 +11370,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 83 */
+/* 81 */
 /***/ (function(module, exports) {
 
 	// Generated by CoffeeScript 1.10.0
@@ -11735,7 +11713,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 84 */
+/* 82 */
 /***/ (function(module, exports) {
 
 	// DO NOT EDIT
@@ -12012,7 +11990,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 85 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
@@ -12022,11 +12000,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
 	  hasProp = {}.hasOwnProperty;
 
-	error = __webpack_require__(83);
+	error = __webpack_require__(81);
 
-	util = __webpack_require__(82);
+	util = __webpack_require__(80);
 
-	protoResponseType = __webpack_require__(84).Response.ResponseType;
+	protoResponseType = __webpack_require__(82).Response.ResponseType;
 
 	Promise = __webpack_require__(2);
 
@@ -12738,7 +12716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ }),
-/* 86 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	// Generated by CoffeeScript 1.10.0
@@ -12747,13 +12725,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  hasProp = {}.hasOwnProperty,
 	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	util = __webpack_require__(82);
+	util = __webpack_require__(80);
 
-	err = __webpack_require__(83);
+	err = __webpack_require__(81);
 
 	net = __webpack_require__(41);
 
-	protoTermType = __webpack_require__(84).Term.TermType;
+	protoTermType = __webpack_require__(82).Term.TermType;
 
 	Promise = __webpack_require__(2);
 
