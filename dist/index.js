@@ -6218,6 +6218,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  tcpPolyfillOptions.isConnected = true;
 	}
 
+	var knownEvents = {
+	  logout: 'logout',
+	  activityUpdate: 'activityUpdate'
+	};
+
 	function Socket(options) {
 	  var _this = this;
 
@@ -6295,10 +6300,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          emitter.emit('data', buffer);
 	        });
 	      } else if (typeof ArrayBuffer !== 'undefined' && data instanceof ArrayBuffer) {
-	        // Support force logout
-	        // In order to not cause weird errors in RDB driver emit it as another topic 'logout'
-	        if (data.byteLength === 6 && Buffer.from(data).toString() === 'logout') {
-	          return emitter.emit('logout');
+	        // Support known events as force logout
+	        // In order to not cause weird errors in RDB driver emit it as it's own topic
+	        if (Object.keys(knownEvents).some(function (event) {
+	          return data.byteLength === event.length;
+	        })) {
+	          var dataString = Buffer.from(data).toString();
+	          if (knownEvents[dataString]) {
+	            return emitter.emit(knownEvents[dataString]);
+	          }
 	        }
 
 	        if (shouldWaitForPacketComplete) {
